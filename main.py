@@ -52,8 +52,9 @@ def get_web_page(ip='192.168.0.1'):
 def Ask_GPT(message):
 
     response = g4f.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        provider=g4f.Provider.DeepAi,
+        #model="gpt-3.5-turbo",
+        model=g4f.models.gpt_4,
+        provider=g4f.Provider.Bing,
         messages=[{"role": "user", "content": message}],
         stream=True,
     )
@@ -61,16 +62,17 @@ def Ask_GPT(message):
     for message in response:
         messages += message
         # print(message)
+    #print(response)
     return messages
 
 def web_vuln(ip,username='',password='',click_login=''):
     
-    server = Server("./browsermob-proxy-2.1.4/bin/browsermob-proxy")
-    server.start()
-    proxy = server.create_proxy()
-    proxy.new_har("new_har", options={'captureContent': True})
+    #server = Server("./browsermob-proxy-2.1.4/bin/browsermob-proxy")
+    #server.start()
+    #proxy = server.create_proxy()
+    #proxy.new_har("new_har", options={'captureContent': True})
     chrome_options = Options()
-    chrome_options.add_argument(f'--proxy-server={proxy.proxy}')
+    #chrome_options.add_argument(f'--proxy-server={proxy.proxy}')
     
     chrome_options.add_argument("--headless")
     if webdriver_path=='':
@@ -91,28 +93,40 @@ def web_vuln(ip,username='',password='',click_login=''):
         passwords.send_keys("password")
     button_element = driver.find_element(by=By.XPATH,value=click_login)
     button_element.click()
-    har = proxy.har
+    #har = proxy.har
 
-    for entry in har['log']['entries']:
-        request = entry['request']
-        if request['method'] == 'POST':
-            request_url = request['url']
-            request_host = [header['value'] for header in request['headers'] if header['name'].lower() == 'host'][0]
-            request_content_length = [header['value'] for header in request['headers'] if header['name'].lower() == 'content-length'][0]
-            request_headers = '\n'.join([f"{header['name']}: {header['value']}" for header in request['headers']])
-            request_body = request['postData']['text']
-            post_request_info = f"POST {request_url} HTTP/1.1\n"
-            post_request_info += f"Host: {request_host}\n"
-            post_request_info += f"Content-Length: {request_content_length}\n"
-            post_request_info += request_headers + '\n\n'
-            post_request_info += request_body
+    # for entry in har['log']['entries']:
+    #     request = entry['request']
+    #     if request['method'] == 'POST':
+    #         request_url = request['url']
+    #         request_host = [header['value'] for header in request['headers'] if header['name'].lower() == 'host'][0]
+    #         request_content_length = [header['value'] for header in request['headers'] if header['name'].lower() == 'content-length'][0]
+    #         request_headers = '\n'.join([f"{header['name']}: {header['value']}" for header in request['headers']])
+    #         request_body = request['postData']['text']
+    #         post_request_info = f"POST {request_url} HTTP/1.1\n"
+    #         post_request_info += f"Host: {request_host}\n"
+    #         post_request_info += f"Content-Length: {request_content_length}\n"
+    #         post_request_info += request_headers + '\n\n'
+    #         post_request_info += request_body
             
 
-            print(post_request_info)
-            
-            print("\n")
-    proxy.close()
-    server.stop()
+    #         print(post_request_info)
+    har_log = driver.execute_script("return window.performance.getEntriesByType('resource')")
+    for entry in har_log:
+        if entry['initiatorType'] == 'xmlhttprequest':
+            request_url = entry['name']
+            request_method = 'POST'    
+            request_headers = entry['requestHeaders']
+            request_body = entry['requestBody']
+            print(f"{request_method} {request_url}")
+            print("Request Headers:")
+            for header in request_headers:
+                print(f"{header['name']}: {header['value']}")
+            print("Request Body:")
+            print(request_body)        
+     
+    #proxy.close()
+    #server.stop()
     driver.quit()
 if __name__ == '__main__':
 
@@ -127,6 +141,9 @@ if __name__ == '__main__':
         # 在此步驟如果執行失敗，請到lib庫中找到
         username=''
         password=''
+        resp = Ask_GPT("Please find the Xpath of the input account and password fields, if not, respond''\nPlease respond in the format of (username:,password:)\nDon't give too many answers\n"+html)
+        print(resp)
+        exit()
         resp = Ask_GPT("請找出輸入帳號和密碼欄位的ID(若沒有帳號欄位或是帳號欄位隱藏則僅顯示密碼)，若無則回應''\n請使用(username:,password:)格式回應\n" + html)
         click_login = Ask_GPT("請找出登入的按鈕Xpath\n請使用(Xpath:)格式回應\n" + html)
         match_user = re.search(r"username:(.*?),\s*password:(.*?)\)", resp)
