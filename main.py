@@ -84,7 +84,7 @@ def web_vuln(ip,username='',password='',click_login=''):
         usernames.send_keys("admin")
     else:
         print(username)
-        print(password)
+        print(password) 
         usernames=driver.find_element(by=By.ID,value=username)
         usernames.send_keys("admin")
         passwords=driver.find_element(by=By.ID,value=password)
