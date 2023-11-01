@@ -15,10 +15,6 @@ https://github.com/xtekky/gpt4free
   所以鑒於這樣的問題，如果可以直接用AI chat的方法來請chat查看是否為真實存在的隱藏介面，即可縮短檢測人員的檢測時長。
 
 
-  所以TODO還很多，但還沒做完
-
-
-
 ### 錯誤訊息
 
 如果Ask_GPT沒辦法成功聯接並出現SSL error
@@ -112,3 +108,8 @@ def __init__(
 ssl: Union[None, bool, Fingerprint, SSLContext] = False,
 ```
 儲存即可徹底解決Error問題
+
+
+---
+
+這項工作並不完整，還未有時間將此工作整理並完成
