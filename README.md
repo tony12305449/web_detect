@@ -2,7 +2,20 @@
 
 https://github.com/xtekky/gpt4free
 
+---
 
+### HOPE:
+  這項工作的想法是希望透過AI Chat與檢測結合，
+  
+  For e.g.
+    有些檢測web的tool都是針對html中的form掃描並逐一測試每一個argument製作成一個payload，但這僅限於使用form表單的情況，如果web本身採用一些javascript的方式去寫form表單的功能，很多tools沒辦法檢測
+
+  因此可能可以使用AI chat結合檢測，並且在每一個檢測過程詢問chat可以如何檢測與測試，最值觀的例子是，通常我們會手動進行測試一些隱藏的頁面或是使用gobuster等工具，但儘管找到一些隱藏的頁面後，還是得需要人工審查每一個頁面是不是有效
+
+  所以鑒於這樣的問題，如果可以直接用AI chat的方法來請chat查看是否為真實存在的隱藏介面，即可縮短檢測人員的檢測時長。
+
+
+  所以TODO還很多，但還沒做完
 
 
 
